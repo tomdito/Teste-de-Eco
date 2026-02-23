@@ -1,4 +1,4 @@
-// engine.js
+﻿// engine.js
 import { ECOS } from './quizData.js';
 
 export function emptyTotals() {

@@ -1,4 +1,4 @@
-import { ecoClass, tintClass, displayEcoName } from "./ecoColor.js";
+﻿import { ecoClass, tintClass, displayEcoName } from "./ecoColor.js";
 import { getResultText } from "./resultTextHelper.js";
 import { buildEcoDescription } from "./ecoDescription.js";
 
@@ -60,7 +60,7 @@ export async function renderFinalResult(result){
             <span class="dot ${ecoClass(result.dominant)}"></span>
             Resultado:
             <span class="${ecoClass(result.dominant)}">${dominantName.toUpperCase()}</span>
-            <span class="glyph">—</span>
+            <span class="glyph">&mdash;</span>
             <span class="badge">
               Secundário:
               <strong class="${ecoClass(result.secondary)}">${secondaryName}</strong>
@@ -70,10 +70,10 @@ export async function renderFinalResult(result){
           <p class="ritual-subtitle">
             Afinidade:
             <strong class="aff-${result.afinidade}">${result.afinidade}</strong>
-            <span class="glyph">•</span>
+            <span class="glyph">&bull;</span>
             Confiabilidade:
             <strong>${result.confidencePct}%</strong>
-            <span class="glyph">•</span>
+            <span class="glyph">&bull;</span>
             Leitura:
             <strong>${tier.toUpperCase()}</strong>
           </p>

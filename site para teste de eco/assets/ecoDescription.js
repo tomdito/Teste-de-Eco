@@ -1,4 +1,4 @@
-import { ECO_INFO } from "./ecoInfo.js";
+﻿import { ECO_INFO } from "./ecoInfo.js";
 
 export function buildEcoDescription(primaryEcoKey, afinidade) {
   const eco = ECO_INFO[primaryEcoKey];

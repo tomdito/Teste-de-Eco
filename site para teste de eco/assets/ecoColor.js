@@ -1,4 +1,4 @@
-export function ecoClass(ecoKey) {
+﻿export function ecoClass(ecoKey) {
   return `eco-${ecoKey}`;
 }
 

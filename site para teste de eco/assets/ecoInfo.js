@@ -1,4 +1,4 @@
-// ecoInfo.js
+﻿// ecoInfo.js
 // Descrições oficiais dos Ecos e estágios de afinidade.
 
 export const ECO_INFO = {

@@ -12,6 +12,7 @@ const QUESTIONS = pickRunQuestions(quiz.questions, quiz.keyQuestions, {
 });
 
 const container = document.getElementById('quiz-container');
+container?.setAttribute('aria-live', 'polite');
 let current = 0;
 let answersById = {};
 let tieBreakerAnswer = null;
@@ -28,51 +29,123 @@ function fadeIn(el) {
 }
 
 function renderStart() {
-  container.innerHTML = ''
-    + '<div class="result-main" style="margin-top:32px;">' + quiz.title + '</div>'
-    + '<div class="result-details" style="margin-bottom:24px;">' + quiz.introText + '</div>'
-    + '<button class="answer-btn" id="start-btn" style="font-size:1.1rem;padding:16px 28px;margin-top:18px;width:auto;">Começar teste</button>';
-  fadeIn(container);
-  document.getElementById('start-btn').onclick = () => {
+  container.innerHTML = '';
+
+  const title = document.createElement('div');
+  title.className = 'result-main';
+  title.style.marginTop = '32px';
+  title.textContent = quiz.title;
+
+  const intro = document.createElement('div');
+  intro.className = 'result-details';
+  intro.style.marginBottom = '24px';
+  intro.textContent = quiz.introText;
+
+  const startBtn = document.createElement('button');
+  startBtn.className = 'answer-btn';
+  startBtn.id = 'start-btn';
+  startBtn.style.cssText = 'font-size:1.1rem;padding:16px 28px;margin-top:18px;width:auto;';
+  startBtn.textContent = 'Come�ar teste';
+
+  startBtn.onclick = () => {
     started = true;
     current = 0;
     answersById = {};
     tieBreakerAnswer = null;
     renderQuestion();
   };
+
+  container.append(title, intro, startBtn);
+  fadeIn(container);
 }
 
 function renderProgress() {
-  const percent = Math.round((current / QUESTIONS.length) * 100);
-  return '<div class="progress-bar"><div class="progress" style="width:' + percent + '%"></div></div>';
+  const percent = Math.round(((current + 1) / QUESTIONS.length) * 100);
+  const bar = document.createElement('div');
+  bar.className = 'progress-bar';
+
+  const fill = document.createElement('div');
+  fill.className = 'progress';
+  fill.style.width = percent + '%';
+  fill.setAttribute('aria-valuemin', '0');
+  fill.setAttribute('aria-valuemax', '100');
+  fill.setAttribute('aria-valuenow', String(percent));
+  fill.setAttribute('role', 'progressbar');
+  fill.setAttribute('aria-label', `Progresso ${percent}%`);
+
+  const label = document.createElement('div');
+  label.className = 'progress-label';
+  label.textContent = `Pergunta ${current + 1} de ${QUESTIONS.length}`;
+
+  bar.append(fill, label);
+  return bar;
 }
 
 function renderQuestion() {
   const q = QUESTIONS[current];
   const answers = shuffleInPlace([...q.answers]);
   let selectedIdx = null;
-  let html = '';
-  html += renderProgress();
-  html += '<div class="question-card">';
-  html += '<div class="question">' + q.prompt + '</div>';
-  html += '<div class="answers">';
-  html += answers.map((a, i) => '<button class="answer-btn" data-idx="' + i + '">' + a.text + '</button>').join('');
-  html += '</div>';
-  html += '<button id="confirm-btn" class="confirm-btn" disabled>Confirmar resposta</button>';
-  html += '</div>';
-  container.innerHTML = html;
-  fadeIn(container);
-  const confirmBtn = document.getElementById('confirm-btn');
-  document.querySelectorAll('.answer-btn').forEach(btn => {
-    btn.onclick = () => {
-      document.querySelectorAll('.answer-btn').forEach(b => b.classList.remove('selected'));
-      btn.classList.add('selected');
-      selectedIdx = Number(btn.dataset.idx);
-      confirmBtn.disabled = false;
-    };
+
+  container.innerHTML = '';
+  const card = document.createElement('div');
+  card.className = 'question-card';
+
+  const progress = renderProgress();
+  const questionEl = document.createElement('div');
+  questionEl.className = 'question';
+  questionEl.textContent = q.prompt;
+
+  const answersWrapper = document.createElement('div');
+  answersWrapper.className = 'answers';
+  answersWrapper.setAttribute('role', 'radiogroup');
+
+  const confirmBtn = document.createElement('button');
+  confirmBtn.id = 'confirm-btn';
+  confirmBtn.className = 'confirm-btn';
+  confirmBtn.disabled = true;
+  confirmBtn.textContent = 'Confirmar resposta';
+
+  const buttons = answers.map((a, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'answer-btn';
+    btn.dataset.idx = String(i);
+    btn.type = 'button';
+    btn.setAttribute('role', 'radio');
+    btn.setAttribute('aria-checked', 'false');
+    btn.textContent = a.text;
+    btn.onclick = () => selectAnswer(i, btn);
+    btn.onkeydown = (ev) => handleArrowNavigation(ev, i);
+    return btn;
   });
+
+  function selectAnswer(idx, btnEl) {
+    buttons.forEach(b => {
+      b.classList.remove('selected');
+      b.setAttribute('aria-checked', 'false');
+    });
+    btnEl.classList.add('selected');
+    btnEl.setAttribute('aria-checked', 'true');
+    selectedIdx = idx;
+    confirmBtn.disabled = false;
+  }
+
+  function handleArrowNavigation(ev, idx) {
+    const { key } = ev;
+    if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(key)) return;
+    ev.preventDefault();
+    const dir = key === 'ArrowUp' || key === 'ArrowLeft' ? -1 : 1;
+    const nextIdx = (idx + dir + buttons.length) % buttons.length;
+    buttons[nextIdx].focus();
+  }
+
+  buttons.forEach(btn => answersWrapper.appendChild(btn));
+  card.append(progress, questionEl, answersWrapper, confirmBtn);
+  container.append(card);
+  fadeIn(container);
+
   confirmBtn.onclick = () => {
     if (selectedIdx === null) return;
+    confirmBtn.disabled = true; // evita duplo clique
     handleAnswer(q, answers[selectedIdx]);
   };
 }
@@ -80,20 +153,57 @@ function renderQuestion() {
 function renderTieBreaker() {
   const q = quiz.tieBreaker;
   const answers = shuffleInPlace([...q.answers]);
-  let html = '';
-  html += '<div class="question">Pergunta bônus de desempate</div>';
-  html += '<div class="question" style="margin-top:8px;">' + q.prompt + '</div>';
-  html += '<div class="answers">';
-  html += answers.map((a, i) => '<button class="answer-btn" data-idx="' + i + '">' + a.text + '</button>').join('');
-  html += '</div>';
-  container.innerHTML = html;
-  fadeIn(container);
-  document.querySelectorAll('.answer-btn').forEach(btn => {
-    btn.onclick = () => {
-      tieBreakerAnswer = answers[Number(btn.dataset.idx)];
-      showResult();
-    };
+  container.innerHTML = '';
+
+  const heading = document.createElement('div');
+  heading.className = 'question';
+  heading.textContent = 'Pergunta b�nus de desempate';
+
+  const prompt = document.createElement('div');
+  prompt.className = 'question';
+  prompt.style.marginTop = '8px';
+  prompt.textContent = q.prompt;
+
+  const answersWrapper = document.createElement('div');
+  answersWrapper.className = 'answers';
+  answersWrapper.setAttribute('role', 'radiogroup');
+
+  const buttons = answers.map((a, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'answer-btn';
+    btn.dataset.idx = String(i);
+    btn.type = 'button';
+    btn.setAttribute('role', 'radio');
+    btn.setAttribute('aria-checked', 'false');
+    btn.textContent = a.text;
+    btn.onclick = () => selectTie(i, btn);
+    btn.onkeydown = (ev) => handleArrowNavigation(ev, i);
+    return btn;
   });
+
+  function selectTie(idx, btnEl) {
+    buttons.forEach(b => {
+      b.classList.remove('selected');
+      b.setAttribute('aria-checked', 'false');
+    });
+    btnEl.classList.add('selected');
+    btnEl.setAttribute('aria-checked', 'true');
+    tieBreakerAnswer = answers[idx];
+    showResult();
+  }
+
+  function handleArrowNavigation(ev, idx) {
+    const { key } = ev;
+    if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(key)) return;
+    ev.preventDefault();
+    const dir = key === 'ArrowUp' || key === 'ArrowLeft' ? -1 : 1;
+    const nextIdx = (idx + dir + buttons.length) % buttons.length;
+    buttons[nextIdx].focus();
+  }
+
+  buttons.forEach(btn => answersWrapper.appendChild(btn));
+  container.append(heading, prompt, answersWrapper);
+  fadeIn(container);
 }
 
 function handleAnswer(q, chosen) {

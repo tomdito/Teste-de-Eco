@@ -1,6 +1,7 @@
 ﻿// quizData.js (agregador final corrigido)
 // Mostre apenas answer.text na UI; scores são internos.
-import { ECOS as BASE_ECOS, quiz as baseQuiz } from './quizData_full_fixed.js';
+// Fonte principal com texto já em UTF-8 correto.
+import { ECOS as BASE_ECOS, quiz as baseQuiz } from './quizData_full_utf8.js';
 import { extraQuestions } from './questions_extra.js';
 
 export const ECOS = BASE_ECOS;

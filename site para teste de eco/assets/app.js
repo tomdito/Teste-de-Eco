@@ -1,4 +1,4 @@
-// app.js
+﻿// app.js
 import { ECOS, quiz } from './quizData.js';
 import { shuffleInPlace, pickRunQuestions } from './selection.js';
 import { evaluateWithTieBreak } from './engine.js';
@@ -45,7 +45,7 @@ function renderStart() {
   startBtn.className = 'answer-btn';
   startBtn.id = 'start-btn';
   startBtn.style.cssText = 'font-size:1.1rem;padding:16px 28px;margin-top:18px;width:auto;';
-  startBtn.textContent = 'Come�ar teste';
+  startBtn.textContent = 'Começar teste';
 
   startBtn.onclick = () => {
     started = true;
@@ -157,7 +157,7 @@ function renderTieBreaker() {
 
   const heading = document.createElement('div');
   heading.className = 'question';
-  heading.textContent = 'Pergunta b�nus de desempate';
+  heading.textContent = 'Pergunta bônus de desempate';
 
   const prompt = document.createElement('div');
   prompt.className = 'question';

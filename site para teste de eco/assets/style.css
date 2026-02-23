@@ -1,0 +1,318 @@
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: radial-gradient(circle at 20% 20%, #171a22, #0e0f14 50%, #08080d 100%);
+  margin: 0;
+  padding: 0;
+  color: #f6f7fb;
+  min-height: 100vh;
+  transition: background 0.6s cubic-bezier(.4,2,.6,1);
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Traços animados dos Ecos no fundo */
+body::before,
+body::after{
+  content:"";
+  position:fixed;
+  inset:-30% -20%;
+  pointer-events:none;
+  z-index:-1;
+  opacity:0.18;
+  filter: blur(14px);
+  mix-blend-mode: screen;
+  background-size: 320% 320%;
+  will-change: transform, background-position;
+}
+body::before{
+  background-image:
+    radial-gradient(120% 60% at 20% 25%, color-mix(in oklab, var(--eco-fogo), transparent 60%), transparent 70%),
+    radial-gradient(95% 55% at 80% 30%, color-mix(in oklab, var(--eco-agua), transparent 55%), transparent 68%),
+    radial-gradient(110% 70% at 50% 90%, color-mix(in oklab, var(--eco-vida), transparent 60%), transparent 75%);
+  animation: ecoFlowA 28s ease-in-out infinite alternate;
+}
+body::after{
+  opacity:0.13;
+  background-image:
+    radial-gradient(105% 60% at 18% 70%, color-mix(in oklab, var(--eco-terra), transparent 62%), transparent 72%),
+    radial-gradient(120% 65% at 78% 75%, color-mix(in oklab, var(--eco-ar), transparent 60%), transparent 72%),
+    radial-gradient(115% 70% at 52% 18%, color-mix(in oklab, var(--eco-alma), transparent 58%), transparent 74%);
+  animation: ecoFlowB 32s ease-in-out infinite alternate;
+}
+@keyframes ecoFlowA{
+  0%  { background-position: 20% 10%, 70% 20%, 40% 80%; transform: translate3d(0,0,0) scale(1.02);}
+  50% { background-position: 55% 40%, 40% 45%, 60% 60%; transform: translate3d(-2%,1%,0) scale(1.05);}
+  100%{ background-position: 80% 70%, 20% 55%, 50% 40%; transform: translate3d(-4%,-2%,0) scale(1.03);}
+}
+@keyframes ecoFlowB{
+  0%  { background-position: 80% 70%, 30% 80%, 60% 20%; transform: translate3d(0,0,0) scale(1.01);}
+  50% { background-position: 50% 50%, 55% 40%, 35% 25%; transform: translate3d(2%,-2%,0) scale(1.04);}
+  100%{ background-position: 25% 20%, 80% 30%, 55% 10%; transform: translate3d(4%,1%,0) scale(1.02);}
+}
+#quiz-container {
+  width: min(92vw, 520px);
+  margin: 32px auto;
+  background: rgba(24,24,28,0.96);
+  border-radius: 18px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.28);
+  padding: 28px 22px 22px 22px;
+  min-height: 320px;
+  transition: box-shadow 0.3s, background 0.6s cubic-bezier(.4,2,.6,1);
+  animation: fadeIn 0.7s cubic-bezier(.4,2,.6,1);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(32px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+.question {
+  font-size: 1.2rem;
+  margin-bottom: 24px;
+  font-weight: 600;
+}
+.answers {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.question-card{
+  background: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.03), rgba(255,255,255,0.00) 55%), rgba(32,32,38,0.92);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 18px 16px;
+  box-shadow: 0 14px 32px rgba(0,0,0,0.28);
+}
+.answer-btn {
+  background: #23232b;
+  color: #f6f7fb;
+  border: none;
+  border-radius: 10px;
+  padding: 14px 18px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s, color 0.2s;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+  width: 100%;
+  text-align: left;
+}
+.answer-btn:hover {
+  background: #2e2e38;
+  color: #ffb347;
+  transform: scale(1.04);
+}
+.answer-btn.selected{
+  background: linear-gradient(135deg, #3a3049, #2b3345);
+  border: 1px solid rgba(255,255,255,0.14);
+  color: #ffe6b3;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.28);
+}
+.confirm-btn{
+  margin-top: 14px;
+  width: 100%;
+  padding: 13px 16px;
+  font-size: 1rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: linear-gradient(90deg, #5a79ff, #7fe3ff);
+  color: #0b0b10;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s, filter 0.15s, opacity 0.15s;
+}
+.confirm-btn:disabled{
+  opacity: 0.55;
+  filter: grayscale(0.4);
+  cursor: not-allowed;
+}
+.confirm-btn:not(:disabled):hover{
+  transform: translateY(-1px);
+}
+.progress-bar {
+  height: 8px;
+  background: #23232b;
+  border-radius: 4px;
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+.progress {
+  height: 100%;
+  background: linear-gradient(90deg, #ffb347, #6dd5ed);
+  width: 0%;
+  transition: width 0.4s cubic-bezier(.4,2,.6,1);
+}
+.result {
+  text-align: center;
+  margin-top: 32px;
+}
+.result-main {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 12px;
+  color: #ffb347;
+  animation: fadeIn 0.7s cubic-bezier(.4,2,.6,1);
+}
+.result-details {
+  font-size: 1.1rem;
+  color: #bdbdbd;
+  margin-bottom: 8px;
+  animation: fadeIn 1.2s cubic-bezier(.4,2,.6,1);
+}
+.result-bar {
+  margin: 18px auto 0 auto;
+  width: 80%;
+  height: 14px;
+  background: #23232b;
+  border-radius: 7px;
+  overflow: hidden;
+}
+.result-bar-inner {
+  height: 100%;
+  background: linear-gradient(90deg, #ffb347, #6dd5ed);
+  width: 0%;
+  transition: width 1s cubic-bezier(.4,2,.6,1);
+}
+
+/* Responsivo para telas pequenas (celular) */
+@media (max-width: 540px) {
+  body { padding: 10px; }
+  #quiz-container {
+    margin: 12px auto;
+    padding: 22px 16px 18px 16px;
+    width: 100%;
+    border-radius: 14px;
+  }
+  .question { font-size: 1.05rem; }
+  .answer-btn { font-size: 0.98rem; padding: 12px 14px; }
+  .result-main { font-size: 1.6rem; }
+}
+
+/* --------- Dark Ritual theme (resultado) --------- */
+:root{
+  --bg: #0b0b10;
+  --panel: rgba(255,255,255,0.04);
+  --panel2: rgba(255,255,255,0.06);
+  --border: rgba(255,255,255,0.10);
+  --text: rgba(255,255,255,0.88);
+  --muted: rgba(255,255,255,0.62);
+  --soft: rgba(255,255,255,0.10);
+  --shadow: rgba(0,0,0,0.45);
+
+  --eco-fogo: #c65b4b;
+  --eco-terra:#8a6b4f;
+  --eco-ar:   #7fa4cf;
+  --eco-agua: #4aa3a1;
+  --eco-vida: #5aa56a;
+  --eco-alma: #9a7bd2;
+
+  --aff-elevada: #c8a74a;
+  --aff-desperta: #6e92c9;
+  --aff-fraca: #8a8a90;
+}
+
+.ritual-wrap{
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 28px 18px 60px;
+}
+
+.ritual-card{
+  border: 1px solid var(--border);
+  background: var(--panel);
+  box-shadow: 0 20px 60px var(--shadow);
+  border-radius: 16px;
+  overflow: hidden;
+}
+.ritual-card + .ritual-card{ margin-top: 16px; }
+
+.ritual-header{
+  padding: 18px 18px 10px;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.05), transparent);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.ritual-title{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin:0;
+  font-size: 22px;
+  letter-spacing: 0.5px;
+}
+.ritual-subtitle{
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.4;
+}
+.badge{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding: 7px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.03);
+  font-size: 12px;
+  color: var(--muted);
+}
+.badge strong{
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  color: var(--text);
+}
+.dot{
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.20);
+  box-shadow: 0 0 14px rgba(255,255,255,0.10);
+}
+.ritual-body{ padding: 16px 18px 18px; }
+.kv{ display:flex; flex-wrap:wrap; gap: 10px; margin-bottom: 14px; }
+hr.sep{ border: none; height: 1px; background: rgba(255,255,255,0.10); margin: 14px 0; }
+.prophecy{
+  white-space: pre-wrap;
+  line-height: 1.65;
+  color: rgba(255,255,255,0.86);
+  font-size: 15px;
+}
+.about-eco{
+  white-space: pre-wrap;
+  line-height: 1.65;
+  color: rgba(255,255,255,0.82);
+  font-size: 14px;
+  transition: color 0.3s ease;
+}
+.section-label{
+  display:block;
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 12px;
+  letter-spacing: 0.9px;
+  text-transform: uppercase;
+}
+.eco-fogo{ color: var(--eco-fogo); }
+.eco-terra{ color: var(--eco-terra); }
+.eco-ar{ color: var(--eco-ar); }
+.eco-agua{ color: var(--eco-agua); }
+.eco-vida{ color: var(--eco-vida); }
+.eco-alma{ color: var(--eco-alma); }
+.dot.eco-fogo{ background: color-mix(in oklab, var(--eco-fogo), #fff 15%); }
+.dot.eco-terra{ background: color-mix(in oklab, var(--eco-terra), #fff 15%); }
+.dot.eco-ar{ background: color-mix(in oklab, var(--eco-ar), #fff 15%); }
+.dot.eco-agua{ background: color-mix(in oklab, var(--eco-agua), #fff 15%); }
+.dot.eco-vida{ background: color-mix(in oklab, var(--eco-vida), #fff 15%); }
+.dot.eco-alma{ background: color-mix(in oklab, var(--eco-alma), #fff 15%); }
+.aff-Elevada{ color: var(--aff-elevada); }
+.aff-Desperta{ color: var(--aff-desperta); }
+.aff-Fraca{ color: var(--aff-fraca); }
+.tint-fogo{ background: linear-gradient(180deg, rgba(198,91,75,0.10), rgba(255,255,255,0.03)); }
+.tint-terra{ background: linear-gradient(180deg, rgba(138,107,79,0.10), rgba(255,255,255,0.03)); }
+.tint-ar{ background: linear-gradient(180deg, rgba(127,164,207,0.10), rgba(255,255,255,0.03)); }
+.tint-agua{ background: linear-gradient(180deg, rgba(74,163,161,0.10), rgba(255,255,255,0.03)); }
+.tint-vida{ background: linear-gradient(180deg, rgba(90,165,106,0.10), rgba(255,255,255,0.03)); }
+.tint-alma{ background: linear-gradient(180deg, rgba(154,123,210,0.10), rgba(255,255,255,0.03)); }
+.glyph{
+  font-family: ui-serif, Georgia, "Times New Roman", serif;
+  opacity: 0.75;
+  letter-spacing: 1px;
+}

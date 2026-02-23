@@ -4,11 +4,12 @@ import { shuffleInPlace, pickRunQuestions } from './selection.js';
 import { evaluateWithTieBreak } from './engine.js';
 import { renderFinalResult } from './renderResult.js';
 
-const RUN_SIZE = 30;
+const RUN_SIZE = 15;
 const QUESTIONS = pickRunQuestions(quiz.questions, quiz.keyQuestions, {
   runSize: RUN_SIZE,
   persistNoRepeat: true,
-  storageKey: 'ecoQuizSeen'
+  storageKey: 'ecoQuizSeen',
+  groupQuotas: { instinto: 4, custo: 4, vinculo: 4, essencia: 3 }
 });
 
 const container = document.getElementById('quiz-container');

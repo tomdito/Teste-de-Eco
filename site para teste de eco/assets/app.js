@@ -17,7 +17,7 @@ container?.setAttribute('aria-live', 'polite');
 const splashSection = document.getElementById('splash');
 const splashBtn = document.getElementById('splash-start');
 const quizSection = document.getElementById('quiz');
-const orbitRing = document.querySelector('.ring');
+const orbitItems = document.querySelectorAll('.orbit-item');
 let current = 0;
 let answersById = {};
 let tieBreakerAnswer = null;
@@ -279,11 +279,11 @@ if (!started) {
 }
 
 function jitterOrbit() {
-  if (!orbitRing) return;
-  const dur = 14 + Math.random() * 10; // 14s a 24s
-  orbitRing.style.animationDuration = `${dur}s`;
-  document.querySelectorAll('.glyph').forEach(g => {
-    g.style.animationDelay = `${Math.random() * 1.2}s`;
-    g.style.opacity = `${0.75 + Math.random() * 0.2}`;
+  orbitItems.forEach(item => {
+    const dur = 18 + Math.random() * 8; // 18s a 26s
+    const drift = 3 + Math.random() * 4; // 3px a 7px
+    item.style.animationDuration = `${dur}s, 4s`;
+    item.style.setProperty('--drift', `${drift}px`);
+    item.style.opacity = `${0.7 + Math.random() * 0.25}`;
   });
 }

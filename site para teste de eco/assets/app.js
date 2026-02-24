@@ -14,11 +14,6 @@ const QUESTIONS = pickRunQuestions(quiz.questions, quiz.keyQuestions, {
 
 const container = document.getElementById('quiz-container');
 container?.setAttribute('aria-live', 'polite');
-const splashSection = document.getElementById('splash');
-const splashBtn = document.getElementById('splash-start');
-const quizSection = document.getElementById('quiz');
-const orbitItems = document.querySelectorAll('.orbit-item');
-const quizWrapper = document.querySelector('.splash-card');
 let current = 0;
 let answersById = {};
 let tieBreakerAnswer = null;
@@ -258,35 +253,7 @@ function showResult() {
 }
 
 if (!started) {
-  if (splashBtn && splashSection && quizSection) {
-    quizSection.classList.add('hidden');
-    splashSection.classList.remove('hidden');
-    jitterOrbit();
-    // garante que o card fica centralizado
-    quizWrapper?.scrollIntoView({ block: 'center', behavior: 'smooth' });
-    splashBtn.onclick = () => {
-      started = true;
-      current = 0;
-      answersById = {};
-      tieBreakerAnswer = null;
-      splashSection.classList.add('hidden');
-      quizSection.classList.remove('hidden');
-      document.body.classList.add('bg-cycle');
-      renderQuestion();
-    };
-  } else {
-    renderStart();
-  }
+  renderStart();
 } else {
   renderQuestion();
-}
-
-function jitterOrbit() {
-  orbitItems.forEach(item => {
-    const dur = 18 + Math.random() * 8; // 18s a 26s
-    const drift = 3 + Math.random() * 4; // 3px a 7px
-    item.style.animationDuration = `${dur}s, 4s`;
-    item.style.setProperty('--drift', `${drift}px`);
-    item.style.opacity = `${0.7 + Math.random() * 0.25}`;
-  });
 }

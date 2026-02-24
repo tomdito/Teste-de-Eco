@@ -18,6 +18,7 @@ const splashSection = document.getElementById('splash');
 const splashBtn = document.getElementById('splash-start');
 const quizSection = document.getElementById('quiz');
 const orbitItems = document.querySelectorAll('.orbit-item');
+const quizWrapper = document.querySelector('.splash-card');
 let current = 0;
 let answersById = {};
 let tieBreakerAnswer = null;
@@ -261,6 +262,8 @@ if (!started) {
     quizSection.classList.add('hidden');
     splashSection.classList.remove('hidden');
     jitterOrbit();
+    // garante que o card fica centralizado
+    quizWrapper?.scrollIntoView({ block: 'center', behavior: 'smooth' });
     splashBtn.onclick = () => {
       started = true;
       current = 0;

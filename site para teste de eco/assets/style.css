@@ -70,15 +70,18 @@ body::after{
   position:relative;
   min-height: 100vh;
   width: 100%;
-  display:grid;
-  place-items:center;
+  display:flex;
+  align-items:center;
+  justify-content:center;
   overflow:hidden;
+  padding: clamp(18px, 4vw, 36px);
 }
 .splash-card{
-  width: min(520px, 92vw);
+  width: min(440px, 92vw);
   text-align: center;
-  gap: 10px;
+  gap: 12px;
   display: grid;
+  margin: 0 auto;
 }
 .title{
   margin:0 0 8px;
@@ -92,7 +95,7 @@ body::after{
 }
 .btn-start{
   width:100%;
-  padding:12px 14px;
+  padding:14px 16px;
   border-radius:12px;
   border:1px solid rgba(255,255,255,0.14);
   background: rgba(255,255,255,0.08);
@@ -114,7 +117,8 @@ body::after{
   place-items:center;
   z-index:1;
   pointer-events:none;
-  opacity:0.92;
+  opacity:0.65;
+  filter: blur(0.2px);
 }
 .orbit-svg{
   width:min(90vmin, 760px);
@@ -123,12 +127,12 @@ body::after{
 }
 .orbit-item{
   transform-origin: 100px 100px;
-  animation: orbitSpin 24s linear infinite, drift 4s ease-in-out infinite alternate;
+  animation: orbitSpin 28s linear infinite, drift 8s ease-in-out infinite alternate;
 }
 .orbit-item path{
   fill:none;
   stroke: currentColor;
-  stroke-width: 3;
+  stroke-width: 2.4;
   stroke-linejoin:round;
   stroke-linecap:round;
   filter: drop-shadow(0 0 12px rgba(0,0,0,0.4));
@@ -153,8 +157,8 @@ body::after{
 }
 @keyframes drift{
   0% { transform: rotate(calc(var(--i) * 60deg)) translateY(-64px) rotate(calc(-1 * var(--i) * 60deg)) translate(0,0); }
-  50% { transform: rotate(calc(var(--i) * 60deg + 6deg)) translateY(-70px) rotate(calc(-1 * var(--i) * 60deg - 6deg)) translate(3px,-2px); }
-  100%{ transform: rotate(calc(var(--i) * 60deg)) translateY(-64px) rotate(calc(-1 * var(--i) * 60deg)) translate(-2px,2px); }
+  50% { transform: rotate(calc(var(--i) * 60deg + 4deg)) translateY(-70px) rotate(calc(-1 * var(--i) * 60deg - 4deg)) translate(2px,-2px); }
+  100%{ transform: rotate(calc(var(--i) * 60deg)) translateY(-64px) rotate(calc(-1 * var(--i) * 60deg)) translate(-2px,1px); }
 }
 
 /* Eco sigil base (resultado) */

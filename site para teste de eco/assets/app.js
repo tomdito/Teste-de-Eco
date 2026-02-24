@@ -14,6 +14,10 @@ const QUESTIONS = pickRunQuestions(quiz.questions, quiz.keyQuestions, {
 
 const container = document.getElementById('quiz-container');
 container?.setAttribute('aria-live', 'polite');
+const splashSection = document.getElementById('splash');
+const splashBtn = document.getElementById('splash-start');
+const quizSection = document.getElementById('quiz');
+const orbitRing = document.querySelector('.ring');
 let current = 0;
 let answersById = {};
 let tieBreakerAnswer = null;
@@ -253,7 +257,33 @@ function showResult() {
 }
 
 if (!started) {
-  renderStart();
+  if (splashBtn && splashSection && quizSection) {
+    quizSection.classList.add('hidden');
+    splashSection.classList.remove('hidden');
+    jitterOrbit();
+    splashBtn.onclick = () => {
+      started = true;
+      current = 0;
+      answersById = {};
+      tieBreakerAnswer = null;
+      splashSection.classList.add('hidden');
+      quizSection.classList.remove('hidden');
+      document.body.classList.add('bg-cycle');
+      renderQuestion();
+    };
+  } else {
+    renderStart();
+  }
 } else {
   renderQuestion();
+}
+
+function jitterOrbit() {
+  if (!orbitRing) return;
+  const dur = 14 + Math.random() * 10; // 14s a 24s
+  orbitRing.style.animationDuration = `${dur}s`;
+  document.querySelectorAll('.glyph').forEach(g => {
+    g.style.animationDelay = `${Math.random() * 1.2}s`;
+    g.style.opacity = `${0.75 + Math.random() * 0.2}`;
+  });
 }

@@ -7,7 +7,31 @@
   <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
-  <div id="quiz-container"></div>
+  <!-- SPLASH -->
+  <section id="splash" class="splash">
+    <div class="orbit" aria-hidden="true">
+      <div class="ring">
+        <span class="glyph eco-fogo"  style="--i:0">△</span>
+        <span class="glyph eco-terra" style="--i:1">▣</span>
+        <span class="glyph eco-ar"    style="--i:2">༄</span>
+        <span class="glyph eco-agua"  style="--i:3">◜◝</span>
+        <span class="glyph eco-vida"  style="--i:4">✣</span>
+        <span class="glyph eco-alma"  style="--i:5">◇</span>
+      </div>
+    </div>
+
+    <div class="altar splash-card">
+      <h1 class="title">Rito de Eco</h1>
+      <p class="subtitle">Descubra o que permanece em você quando a máscara cai.</p>
+      <button id="splash-start" class="btn-start">Começar</button>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="quiz" class="quiz hidden">
+    <div id="quiz-container"></div>
+  </section>
+
   <script type="module" src="assets/app.js"></script>
 </body>
 </html>

@@ -12,6 +12,7 @@ body {
   align-items: flex-start;
   justify-content: center;
 }
+.hidden{ display:none; }
 
 /* Traços animados dos Ecos no fundo */
 body::before,
@@ -62,6 +63,241 @@ body::after{
   min-height: 320px;
   transition: box-shadow 0.3s, background 0.6s cubic-bezier(.4,2,.6,1);
   animation: fadeIn 0.7s cubic-bezier(.4,2,.6,1);
+}
+
+/* Splash / orbit */
+.splash, .quiz{
+  position:relative;
+  min-height: 100vh;
+  width: 100%;
+  display:grid;
+  place-items:center;
+  overflow:hidden;
+}
+.splash-card{
+  width: min(520px, 92vw);
+  text-align: center;
+  gap: 10px;
+  display: grid;
+}
+.title{
+  margin:0 0 8px;
+  letter-spacing: 1px;
+  font-size: 28px;
+}
+.subtitle{
+  margin:0;
+  color: rgba(255,255,255,0.75);
+  line-height:1.5;
+}
+.btn-start{
+  width:100%;
+  padding:12px 14px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.92);
+  font-weight:700;
+  letter-spacing:0.6px;
+  cursor:pointer;
+  transition: background 0.25s ease, transform 0.25s ease;
+}
+.btn-start:hover{
+  background: rgba(255,255,255,0.12);
+  transform: translateY(-1px);
+}
+
+.orbit{
+  position:absolute;
+  inset:0;
+  display:grid;
+  place-items:center;
+  z-index:1;
+  pointer-events:none;
+  opacity:0.9;
+}
+.ring{
+  width:min(760px, 110vw);
+  height:min(760px, 110vw);
+  position:relative;
+  border-radius:999px;
+  animation: spin 18s linear infinite;
+  filter: drop-shadow(0 0 18px rgba(0,0,0,0.5));
+}
+.glyph{
+  --count: 6;
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:
+    translate(-50%, -50%)
+    rotate(calc((360deg / var(--count)) * var(--i)))
+    translateY(calc(-1 * min(300px, 40vw)))
+    rotate(calc(-1 * (360deg / var(--count)) * var(--i)));
+  font-size: clamp(32px, 5vw, 44px);
+  opacity:0.85;
+  text-shadow: 0 0 18px rgba(0,0,0,0.55);
+}
+.eco-fogo{ color: var(--eco-fogo); }
+.eco-terra{ color: var(--eco-terra); }
+.eco-ar{ color: var(--eco-ar); }
+.eco-agua{ color: var(--eco-agua); }
+.eco-vida{ color: var(--eco-vida); }
+.eco-alma{
+  color: var(--eco-alma);
+  position:relative;
+}
+.eco-alma::after{
+  content:"";
+  position:absolute;
+  inset:-14px;
+  background: linear-gradient(90deg,
+    rgba(154,123,210,0.35),
+    rgba(74,163,161,0.22),
+    rgba(198,91,75,0.18),
+    rgba(90,165,106,0.20),
+    rgba(154,123,210,0.35)
+  );
+  filter: blur(10px);
+  opacity:0.55;
+  z-index:-1;
+  border-radius:999px;
+  animation: aurora 6s linear infinite;
+}
+
+@keyframes spin{ to { transform: rotate(360deg); } }
+@keyframes aurora{ to { filter: blur(10px) hue-rotate(360deg); } }
+
+/* Eco sigil base (resultado) */
+.eco-sigil{
+  height: 120px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.04);
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.20), 0 18px 60px rgba(0,0,0,0.45);
+  position: relative;
+  overflow: hidden;
+}
+.eco-sigil::after{
+  content:"";
+  position:absolute;
+  inset:-40%;
+  transform: rotate(0deg);
+  opacity: 0.95;
+  pointer-events:none;
+}
+.eco-sigil.is-fogo::after{
+  background:
+    radial-gradient(circle at 30% 60%, rgba(198,91,75,0.45), transparent 55%),
+    radial-gradient(circle at 60% 40%, rgba(198,91,75,0.35), transparent 60%),
+    conic-gradient(from 180deg,
+      rgba(198,91,75,0.0),
+      rgba(198,91,75,0.25),
+      rgba(255,255,255,0.06),
+      rgba(198,91,75,0.18),
+      rgba(198,91,75,0.0)
+    );
+  filter: blur(10px) saturate(1.15);
+  animation: sigilFlame 2.2s ease-in-out infinite;
+}
+.eco-sigil.is-terra::after{
+  background:
+    repeating-linear-gradient(45deg,
+      rgba(138,107,79,0.26) 0px,
+      rgba(138,107,79,0.26) 12px,
+      rgba(0,0,0,0.00) 12px,
+      rgba(0,0,0,0.00) 26px
+    ),
+    radial-gradient(circle at 50% 50%, rgba(138,107,79,0.33), transparent 60%);
+  filter: blur(6px) contrast(1.05);
+  animation: sigilStone 3.2s ease-in-out infinite;
+}
+.eco-sigil.is-ar::after{
+  background:
+    radial-gradient(circle at 30% 40%, rgba(127,164,207,0.30), transparent 55%),
+    radial-gradient(circle at 70% 60%, rgba(127,164,207,0.22), transparent 60%),
+    repeating-radial-gradient(circle at 50% 50%,
+      rgba(127,164,207,0.18) 0px,
+      rgba(127,164,207,0.18) 10px,
+      rgba(0,0,0,0.00) 10px,
+      rgba(0,0,0,0.00) 22px
+    );
+  filter: blur(10px);
+  animation: sigilWind 4.5s linear infinite;
+}
+.eco-sigil.is-agua::after{
+  background:
+    conic-gradient(from 90deg,
+      rgba(74,163,161,0.00),
+      rgba(74,163,161,0.32),
+      rgba(255,255,255,0.06),
+      rgba(74,163,161,0.22),
+      rgba(74,163,161,0.00)
+    ),
+    radial-gradient(circle at 45% 55%, rgba(74,163,161,0.35), transparent 62%),
+    radial-gradient(circle at 65% 40%, rgba(74,163,161,0.22), transparent 62%);
+  filter: blur(12px) saturate(1.05);
+  animation: sigilWater 3.4s ease-in-out infinite;
+}
+.eco-sigil.is-vida::after{
+  background:
+    radial-gradient(circle at 30% 70%, rgba(90,165,106,0.32), transparent 60%),
+    radial-gradient(circle at 70% 30%, rgba(90,165,106,0.22), transparent 60%),
+    repeating-linear-gradient(90deg,
+      rgba(90,165,106,0.18) 0px,
+      rgba(90,165,106,0.18) 8px,
+      rgba(0,0,0,0.00) 8px,
+      rgba(0,0,0,0.00) 20px
+    );
+  filter: blur(9px);
+  animation: sigilLife 2.8s ease-in-out infinite;
+}
+.eco-sigil.is-alma::after{
+  background:
+    linear-gradient(90deg,
+      rgba(154,123,210,0.25),
+      rgba(74,163,161,0.18),
+      rgba(198,91,75,0.14),
+      rgba(90,165,106,0.16),
+      rgba(154,123,210,0.25)
+    ),
+    radial-gradient(circle at 50% 55%, rgba(154,123,210,0.30), transparent 62%);
+  filter: blur(12px);
+  animation: sigilSoul 5.8s linear infinite;
+}
+@keyframes sigilFlame{
+  0%   { transform: rotate(0deg) translateY(0) scale(1.00); opacity:0.90; }
+  50%  { transform: rotate(6deg) translateY(-8px) scale(1.03); opacity:0.98; }
+  100% { transform: rotate(0deg) translateY(0) scale(1.00); opacity:0.90; }
+}
+@keyframes sigilStone{
+  0%   { transform: translate(0,0) scale(1.00); opacity:0.86; }
+  50%  { transform: translate(0,-2px) scale(1.02); opacity:0.96; }
+  100% { transform: translate(0,0) scale(1.00); opacity:0.86; }
+}
+@keyframes sigilWind{
+  0%   { transform: translate(-6%, -2%) rotate(0deg); opacity:0.86; }
+  50%  { transform: translate(6%, 2%) rotate(10deg); opacity:0.96; }
+  100% { transform: translate(-6%, -2%) rotate(0deg); opacity:0.86; }
+}
+@keyframes sigilWater{
+  0%   { transform: rotate(0deg) translateX(-2%) scale(1.02); opacity:0.86; }
+  50%  { transform: rotate(14deg) translateX(2%) scale(1.06); opacity:0.98; }
+  100% { transform: rotate(0deg) translateX(-2%) scale(1.02); opacity:0.86; }
+}
+@keyframes sigilLife{
+  0%   { transform: scale(1.00); opacity:0.84; }
+  50%  { transform: scale(1.06); opacity:0.98; }
+  100% { transform: scale(1.00); opacity:0.84; }
+}
+@keyframes sigilSoul{
+  0%   { transform: translateX(-6%) hue-rotate(0deg); opacity:0.82; }
+  50%  { transform: translateX(6%) hue-rotate(180deg); opacity:0.98; }
+  100% { transform: translateX(-6%) hue-rotate(360deg); opacity:0.82; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .ring, .eco-alma::after, body.bg-cycle, .eco-sigil::after{ animation:none !important; }
 }
 
 @keyframes fadeIn {

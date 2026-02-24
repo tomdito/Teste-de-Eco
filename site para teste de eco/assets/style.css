@@ -64,6 +64,14 @@ body::after{
   transition: box-shadow 0.3s, background 0.6s cubic-bezier(.4,2,.6,1);
   animation: fadeIn 0.7s cubic-bezier(.4,2,.6,1);
 }
+.start-mode {
+  text-align: center;
+}
+.start-mode .result-details {
+  max-width: 460px;
+  margin-left: auto;
+  margin-right: auto;
+}
 
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(32px) scale(0.98); }

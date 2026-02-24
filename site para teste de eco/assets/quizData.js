@@ -5,6 +5,8 @@ export const ECOS = ["fogo", "terra", "ar", "agua", "vida", "alma"];
 // categorias: conflito, pressao, vinculos, trabalho, moral
 export const quiz = {
   keyQuestions: [],
+  title: 'Rito de Eco',
+  introText: 'Responda a cada situação com a atitude que mais combina com você. Não existe resposta certa ou errada, apenas o que reflete melhor quem você é. No final, você vai descobrir qual dos 6 Ecos tem mais afinidade com seu jeito de ser.',
   questions: [
     { id: 1,  category: "conflito", prompt: "Você chega e vê alguém falando mal de um amigo seu. Você…", answers: [
       { text: "Interrompe e corta na hora.", scores: { fogo: 2 } },
@@ -406,7 +408,5 @@ export const quiz = {
       { text: "Evitar machucar quem importa.", scores: { vida: 2 } },
       { text: "Não perder o respeito por si mesmo.", scores: { alma: 2 } }
     ]}
-  ],
-  title: 'Quiz de Eco',
-  introText: 'Responda 10 situações rápidas. Escolha o que você faria.',
+  ]
 };

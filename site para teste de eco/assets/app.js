@@ -31,6 +31,7 @@ function fadeIn(el) {
 
 function renderStart() {
   container.innerHTML = '';
+  container.classList.add('start-mode');
 
   const title = document.createElement('div');
   title.className = 'result-main';
@@ -97,6 +98,7 @@ function renderQuestion() {
   let selectedIdx = null;
 
   container.innerHTML = '';
+  container.classList.remove('start-mode');
   const card = document.createElement('div');
   card.className = 'question-card';
 

@@ -45,7 +45,16 @@ function renderStart() {
   const startBtn = document.createElement('button');
   startBtn.className = 'answer-btn';
   startBtn.id = 'start-btn';
-  startBtn.style.cssText = 'font-size:1.1rem;padding:16px 28px;margin-top:18px;width:auto;';
+  startBtn.style.cssText = [
+    'font-size:1.1rem',
+    'padding:16px 28px',
+    'margin-top:18px',
+    'margin-left:auto',
+    'margin-right:auto',
+    'width:auto',
+    'display:inline-flex',
+    'justify-content:center'
+  ].join(';');
   startBtn.textContent = 'Começar teste';
 
   startBtn.onclick = () => {

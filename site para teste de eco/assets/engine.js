@@ -40,10 +40,10 @@ export function clamp01(x) {
 }
 
 export function classifyAffinity({ topNorm, diffNorm, reliability }) {
-  // Afinidade agora mais permissiva (evita cair sempre em "Fraca" com runs curtas)
+  // Afinidade mais permissiva para runs curtas (15 perguntas)
   // Ajuste rápido: eleve/baixe estes números conforme o equilíbrio desejado.
-  if (topNorm >= 0.45 && diffNorm >= 0.06 && reliability >= 0.32) return 'Elevada';
-  if (topNorm >= 0.30 && diffNorm >= 0.02 && reliability >= 0.22) return 'Desperta';
+  if (topNorm >= 0.38 && diffNorm >= 0.04 && reliability >= 0.18) return 'Elevada';
+  if (topNorm >= 0.22 && diffNorm >= 0.01 && reliability >= 0.12) return 'Desperta';
   return 'Fraca';
 }
 

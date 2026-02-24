@@ -4,12 +4,12 @@ import { shuffleInPlace, pickRunQuestions } from './selection.js';
 import { evaluateWithTieBreak } from './engine.js';
 import { renderFinalResult } from './renderResult.js';
 
-const RUN_SIZE = 15;
+const RUN_SIZE = 10;
 const QUESTIONS = pickRunQuestions(quiz.questions, quiz.keyQuestions, {
   runSize: RUN_SIZE,
   persistNoRepeat: true,
   storageKey: 'ecoQuizSeen',
-  groupQuotas: { instinto: 4, custo: 4, vinculo: 4, essencia: 3 }
+  categoryQuotas: { conflito: 2, pressao: 2, vinculos: 2, trabalho: 2, moral: 2 }
 });
 
 const container = document.getElementById('quiz-container');
@@ -230,16 +230,10 @@ function showResult() {
   const result = evaluateWithTieBreak({
     runQuestions: QUESTIONS,
     keyIds: quiz.keyQuestions,
-    answersById,
-    tieBreakerAnswer
+    answersById
   });
 
-  if (result.tieMode === 'askTieBreaker') {
-    renderTieBreaker();
-    return;
-  }
-
-  const reliabilityPct = Math.round(result.reliability * 100);
+  const confidencePct = Math.round((result.topScore / result.max) * 100);
 
   // Usa o renderizador ritual completo
   container.innerHTML = '<div id="result"></div>';
@@ -248,7 +242,7 @@ function showResult() {
     dominant: result.topEco,
     secondary: result.secondEco,
     afinidade: result.afinidade,
-    confidencePct: reliabilityPct
+    confidencePct
   });
 }
 

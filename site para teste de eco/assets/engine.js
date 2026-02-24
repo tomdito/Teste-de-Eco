@@ -1,4 +1,4 @@
-﻿// engine.js
+﻿// engine.js - lógica simplificada
 import { ECOS } from './quizData.js';
 
 export function emptyTotals() {
@@ -12,114 +12,68 @@ export function addScoresWeighted(totals, scores, weight) {
 }
 
 export function calcMaxScore(runQuestions) {
-  return runQuestions.reduce((sum, q) => sum + (2 * (q.weight || 1)), 0);
+  return runQuestions.length * 2; // 10 perguntas * 2 pontos cada
 }
 
 export function sortTotals(totals) {
   return Object.entries(totals).sort((a, b) => b[1] - a[1]);
 }
 
-export function calcEntropyReliability(totals) {
-  const values = Object.values(totals);
-  const sum = values.reduce((a, b) => a + b, 0);
-  if (sum <= 0) return 0;
-
-  let entropy = 0;
-  for (const v of values) {
-    if (v <= 0) continue;
-    const p = v / sum;
-    entropy -= p * Math.log(p);
-  }
-  const maxEntropy = Math.log(values.length);
-  const reliability = 1 - (entropy / maxEntropy);
-  return clamp01(reliability);
-}
-
-export function clamp01(x) {
-  return Math.max(0, Math.min(1, x));
-}
-
-export function classifyAffinity({ topNorm, diffNorm, reliability }) {
-  // Afinidade mais permissiva para runs curtas (15 perguntas)
-  // Ajuste rápido: eleve/baixe estes números conforme o equilíbrio desejado.
-  if (topNorm >= 0.38 && diffNorm >= 0.04 && reliability >= 0.18) return 'Elevada';
-  if (topNorm >= 0.22 && diffNorm >= 0.01 && reliability >= 0.12) return 'Desperta';
+export function classifyAffinity({ topScore }) {
+  if (topScore >= 15) return 'Elevada';
+  if (topScore >= 9) return 'Desperta';
   return 'Fraca';
-}
-
-export function shouldTieBreak({ topScore, secondScore, diffNorm, reliability }) {
-  return topScore === secondScore || diffNorm < 0.03 || reliability < 0.40;
 }
 
 export function evaluateRun({ runQuestions, answersById }) {
   const totals = emptyTotals();
+  const counts = emptyTotals(); // quantas vezes cada Eco recebeu +2
 
   for (const q of runQuestions) {
     const chosen = answersById[q.id];
     if (!chosen) continue;
-    addScoresWeighted(totals, chosen.scores, q.weight || 1);
+    addScoresWeighted(totals, chosen.scores, 1);
+    for (const [eco, score] of Object.entries(chosen.scores || {})) {
+      if (score >= 2) counts[eco] = (counts[eco] || 0) + 1;
+    }
   }
 
   const max = calcMaxScore(runQuestions);
   const sorted = sortTotals(totals);
   const [topEco, topScore] = sorted[0];
   const [secondEco, secondScore] = sorted[1];
-
-  const topNorm = max > 0 ? topScore / max : 0;
-  const diffNorm = max > 0 ? (topScore - secondScore) / max : 0;
-  const reliability = calcEntropyReliability(totals);
-  const afinidade = classifyAffinity({ topNorm, diffNorm, reliability });
+  const afinidade = classifyAffinity({ topScore });
 
   return {
     totals,
+    counts,
     max,
     sorted,
     topEco,
     secondEco,
     topScore,
     secondScore,
-    topNorm,
-    diffNorm,
-    reliability,
     afinidade
   };
 }
 
-export function evaluateWithTieBreak({ runQuestions, keyIds, answersById, tieBreakerAnswer }) {
+export function evaluateWithTieBreak({ runQuestions, keyIds, answersById }) {
   const base = evaluateRun({ runQuestions, answersById });
-  if (!shouldTieBreak(base)) return { ...base, tieUsed: false };
-
-  const keySet = new Set(keyIds || []);
-  const keyQs = runQuestions.filter(q => keySet.has(q.id));
-  if (keyQs.length >= 2) {
-    const keyEval = evaluateRun({ runQuestions: keyQs, answersById });
-    if (!shouldTieBreak(keyEval)) {
-      return {
-        ...base,
-        topEco: keyEval.topEco,
-        secondEco: keyEval.secondEco,
-        tieUsed: true,
-        tieMode: 'keyQuestions'
-      };
-    }
+  if (base.topScore !== base.secondScore) {
+    return { ...base, tieUsed: false, tieMode: 'clear' };
   }
 
-  if (tieBreakerAnswer) {
-    const totals = { ...base.totals };
-    addScoresWeighted(totals, tieBreakerAnswer.scores, 3);
-    const sorted = sortTotals(totals);
-    const [topEco] = sorted[0];
-    const [secondEco] = sorted[1];
-    return {
-      ...base,
-      totals,
-      sorted,
-      topEco,
-      secondEco,
-      tieUsed: true,
-      tieMode: 'tieBreaker'
-    };
+  // desempate por número de +2
+  const first = base.sorted[0][0];
+  const second = base.sorted[1][0];
+  const c1 = base.counts[first] || 0;
+  const c2 = base.counts[second] || 0;
+  if (c1 !== c2) {
+    const winner = c1 > c2 ? first : second;
+    const runner = winner === first ? second : first;
+    return { ...base, topEco: winner, secondEco: runner, tieUsed: true, tieMode: 'countBreak' };
   }
 
-  return { ...base, tieUsed: true, tieMode: 'askTieBreaker' };
+  // empate real: retorna híbrido
+  return { ...base, tieUsed: true, tieMode: 'hybrid' };
 }

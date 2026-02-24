@@ -18,10 +18,10 @@ function saveSeen(storageKey, set) {
 
 export function pickRunQuestions(allQuestions, keyIds, options = {}) {
   const {
-    runSize = 30,
+    runSize = 10,
     persistNoRepeat = false,
     storageKey = 'ecoQuizSeen',
-    groupQuotas = { instinto: 7, custo: 8, vinculo: 7, essencia: 8 }
+    categoryQuotas = { conflito: 2, pressao: 2, vinculos: 2, trabalho: 2, moral: 2 }
   } = options;
 
   let seen = persistNoRepeat ? loadSeen(storageKey) : new Set();
@@ -42,18 +42,19 @@ export function pickRunQuestions(allQuestions, keyIds, options = {}) {
   const selectedIds = new Set(selected.map(q => q.id));
   available = available.filter(q => !selectedIds.has(q.id));
 
-  const byGroup = {
-    instinto: available.filter(q => q.group === 'instinto'),
-    custo: available.filter(q => q.group === 'custo'),
-    vinculo: available.filter(q => q.group === 'vinculo'),
-    essencia: available.filter(q => q.group === 'essencia')
-  };
-  Object.values(byGroup).forEach(shuffleInPlace);
+  const byCat = {};
+  for (const q of available) {
+    const cat = q.category || 'misc';
+    if (!byCat[cat]) byCat[cat] = [];
+    byCat[cat].push(q);
+  }
+  Object.values(byCat).forEach(shuffleInPlace);
 
-  for (const [g, quota] of Object.entries(groupQuotas)) {
+  for (const [cat, quota] of Object.entries(categoryQuotas)) {
     if (selected.length >= runSize) break;
+    const pool = byCat[cat] || [];
     const need = Math.min(quota, runSize - selected.length);
-    selected.push(...(byGroup[g] || []).slice(0, need));
+    selected.push(...pool.slice(0, need));
   }
 
   if (selected.length < runSize) {
@@ -67,7 +68,6 @@ export function pickRunQuestions(allQuestions, keyIds, options = {}) {
     saveSeen(storageKey, seen);
   }
 
-  // garantia extra contra qualquer duplicação acidental
   const unique = [];
   const seenIds = new Set();
   for (const q of selected) {
